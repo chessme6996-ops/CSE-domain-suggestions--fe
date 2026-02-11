@@ -31,3 +31,12 @@ SQLAlchemy==2.0.31
 python-dotenv==1.0.1
 click==8.1.7
 six==1.16.0
+fastapi
+uvicorn
+pydantic
+numpy
+pandas
+joblib
+scikit-learn
+gunicorn
+
