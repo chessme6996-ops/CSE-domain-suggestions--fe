@@ -14,7 +14,7 @@ export default function PredictForm({ values, setValues }) {
 
     setLoading(true);
     try {
-      // FORCED LIVE URL - No more local IP fallback
+      // FORCED URL: This removes the 127.0.0.1 error forever
       const apiUrl = "https://cse-domain-suggestions-fe-1.onrender.com";
       
       const response = await fetch(`${apiUrl}/predict`, {
@@ -27,7 +27,7 @@ export default function PredictForm({ values, setValues }) {
       const data = await response.json();
       setResult(data.predicted_role || "Prediction failed");
     } catch (err) {
-      console.error("Connection failed to Render backend");
+      console.error("Connection failed to:", "https://cse-domain-suggestions-fe-1.onrender.com");
       setResult("API Error: Backend offline");
     } finally {
       setLoading(false);
@@ -54,3 +54,4 @@ export default function PredictForm({ values, setValues }) {
     </div>
   );
 }
+
