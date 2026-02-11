@@ -7,7 +7,6 @@ export default function PredictForm({ values, setValues }) {
 
   async function handlePredict() {
     const entries = Object.values(values);
-    
     if (entries.length !== 14 || entries.some(v => v === "")) {
       setResult("Please fill all inputs");
       return;
@@ -15,7 +14,7 @@ export default function PredictForm({ values, setValues }) {
 
     setLoading(true);
     try {
-      // We are hardcoding this because Render is not picking up the variable
+      // FORCED LIVE URL - No more local IP fallback
       const apiUrl = "https://cse-domain-suggestions-fe-1.onrender.com";
       
       const response = await fetch(`${apiUrl}/predict`, {
@@ -25,11 +24,10 @@ export default function PredictForm({ values, setValues }) {
       });
 
       if (!response.ok) throw new Error("Server error");
-      
       const data = await response.json();
       setResult(data.predicted_role || "Prediction failed");
     } catch (err) {
-      console.error("Connection failed to:", "https://cse-domain-suggestions-fe-1.onrender.com");
+      console.error("Connection failed to Render backend");
       setResult("API Error: Backend offline");
     } finally {
       setLoading(false);
