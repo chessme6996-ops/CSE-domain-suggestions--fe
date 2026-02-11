@@ -8,7 +8,6 @@ export default function PredictForm({ values, setValues }) {
   async function handlePredict() {
     const entries = Object.values(values);
     
-    // Ensure all 14 fields are filled
     if (entries.length !== 14 || entries.some(v => v === "")) {
       setResult("Please fill all inputs");
       return;
@@ -16,7 +15,7 @@ export default function PredictForm({ values, setValues }) {
 
     setLoading(true);
     try {
-      // FORCED URL: This replaces the 127.0.0.1 error
+      // We are hardcoding this because Render is not picking up the variable
       const apiUrl = "https://cse-domain-suggestions-fe-1.onrender.com";
       
       const response = await fetch(`${apiUrl}/predict`, {
@@ -30,7 +29,7 @@ export default function PredictForm({ values, setValues }) {
       const data = await response.json();
       setResult(data.predicted_role || "Prediction failed");
     } catch (err) {
-      console.error("Fetch error:", err);
+      console.error("Connection failed to:", "https://cse-domain-suggestions-fe-1.onrender.com");
       setResult("API Error: Backend offline");
     } finally {
       setLoading(false);
@@ -42,7 +41,7 @@ export default function PredictForm({ values, setValues }) {
       <button
         onClick={handlePredict}
         disabled={loading}
-        className={`px-6 py-3 bg-black text-white rounded-lg text-lg transition-all ${
+        className={`px-6 py-3 bg-black text-white rounded-lg text-lg ${
           loading ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-800"
         }`}
       >
