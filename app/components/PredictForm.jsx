@@ -5,41 +5,27 @@ export default function PredictForm({ values, setValues }) {
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
 
-  function handleChange(key, value) {
-    setValues({ ...values, [key]: value });
-  }
-
   async function handlePredict() {
     const entries = Object.values(values);
-
-    // Validation for 14 features
     if (entries.length !== 14 || entries.some(v => v === "")) {
-      setResult("Please fill all 14 inputs");
+      setResult("Please fill all inputs");
       return;
     }
 
-    const finalValues = entries.map(Number);
     setLoading(true);
-
     try {
-      // Use the Render environment variable or fallback to local for testing
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
-      
       const response = await fetch(`${apiUrl}/predict`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ values: finalValues })
+        body: JSON.stringify({ values: entries.map(Number) })
       });
 
-      if (!response.ok) {
-        throw new Error(`Server responded with ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error("Server error");
       const data = await response.json();
       setResult(data.predicted_role || "Prediction failed");
     } catch (err) {
-      console.error("Fetch error:", err);
-      setResult("API Error: Check if backend is live");
+      setResult("API Error: Backend offline");
     } finally {
       setLoading(false);
     }
@@ -56,7 +42,6 @@ export default function PredictForm({ values, setValues }) {
       >
         {loading ? "Predicting..." : "Predict Career"}
       </button>
-
       <div className="mt-6 p-4 bg-gray-100 rounded-lg inline-block min-w-[200px]">
         <h3 className="text-sm uppercase tracking-wider text-gray-500">Result</h3>
         <p className="text-2xl font-bold text-blue-600">
