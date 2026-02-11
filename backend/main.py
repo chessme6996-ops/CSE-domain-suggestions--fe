@@ -27,7 +27,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
-        "https://your-frontend-name.onrender.com"
+        "https://purpose-next-app.onrender.com"
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -57,3 +57,4 @@ def predict_career(data: UserInput):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=port)
+
