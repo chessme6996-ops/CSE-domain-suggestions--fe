@@ -29,7 +29,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],  # Allows all methods (GET, POST, etc.)
     allow_headers=["*"],  # Allows all headers
-))
+)
 
 class UserInput(BaseModel):
     values: list
@@ -54,4 +54,5 @@ def predict_career(data: UserInput):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=port)
+
 
