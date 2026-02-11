@@ -3,6 +3,7 @@ import { useState } from "react";
 
 export default function PredictForm({ values, setValues }) {
   const [result, setResult] = useState("");
+  const [loading, setLoading] = useState(false);
 
   function handleChange(key, value) {
     setValues({ ...values, [key]: value });
@@ -11,25 +12,36 @@ export default function PredictForm({ values, setValues }) {
   async function handlePredict() {
     const entries = Object.values(values);
 
+    // Validation for 14 features
     if (entries.length !== 14 || entries.some(v => v === "")) {
-      setResult("No input provided");
+      setResult("Please fill all 14 inputs");
       return;
     }
 
     const finalValues = entries.map(Number);
+    setLoading(true);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/predict", {
+      // Use the Render environment variable or fallback to local for testing
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+      
+      const response = await fetch(`${apiUrl}/predict`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ values: finalValues })
       });
 
+      if (!response.ok) {
+        throw new Error(`Server responded with ${response.status}`);
+      }
+
       const data = await response.json();
       setResult(data.predicted_role || "Prediction failed");
     } catch (err) {
-      console.error(err);
-      setResult("API Error");
+      console.error("Fetch error:", err);
+      setResult("API Error: Check if backend is live");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -37,14 +49,20 @@ export default function PredictForm({ values, setValues }) {
     <div className="text-center mt-10">
       <button
         onClick={handlePredict}
-        className="px-6 py-3 bg-black text-white rounded-lg text-lg"
+        disabled={loading}
+        className={`px-6 py-3 bg-black text-white rounded-lg text-lg transition-all ${
+          loading ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-800"
+        }`}
       >
-        Predict
+        {loading ? "Predicting..." : "Predict Career"}
       </button>
 
-      <p className="mt-4 text-xl font-semibold">
-        {result || "No input provided"}
-      </p>
+      <div className="mt-6 p-4 bg-gray-100 rounded-lg inline-block min-w-[200px]">
+        <h3 className="text-sm uppercase tracking-wider text-gray-500">Result</h3>
+        <p className="text-2xl font-bold text-blue-600">
+          {result || "Waiting for input..."}
+        </p>
+      </div>
     </div>
   );
 }
